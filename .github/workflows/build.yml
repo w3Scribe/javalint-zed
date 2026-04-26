@@ -1,0 +1,62 @@
+name: Build Java Lint Extension
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
+
+      - name: Build WASM
+        run: cargo build --target wasm32-wasip1 --release
+
+      - name: Download Checkstyle
+        run: |
+          curl -L \
+            https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.21.4/checkstyle-10.21.4-all.jar \
+            -o shim/checkstyle.jar
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build LSP Shim
+        working-directory: shim
+        run: |
+          javac -cp checkstyle.jar CheckstyleLspShim.java
+          jar cfm checkstyle-lsp-shim.jar MANIFEST.MF CheckstyleLspShim*.class
+
+      - name: Package extension
+        run: |
+          mkdir -p release
+          cp target/wasm32-wasip1/release/java_lint.wasm release/
+          cp shim/checkstyle-lsp-shim.jar release/
+          cp shim/checkstyle.jar release/
+          cp extension.toml release/
+          cp checkstyle.xml release/
+          cd release && zip -r ../java-lint-zed-release.zip .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-lint-zed
+          path: java-lint-zed-release.zip
+          retention-days: 30
