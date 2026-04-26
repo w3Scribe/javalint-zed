@@ -47,7 +47,8 @@ jobs:
       - name: Package extension
         run: |
           mkdir -p release
-          cp target/wasm32-wasip1/release/java_lint.wasm release/
+          # rename to extension.wasm — Zed requires this exact name!
+          cp target/wasm32-wasip1/release/java_lint.wasm release/extension.wasm
           cp shim/checkstyle-lsp-shim.jar release/
           cp shim/checkstyle.jar release/
           cp extension.toml release/
