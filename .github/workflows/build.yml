@@ -52,6 +52,7 @@ jobs:
           cp shim/checkstyle.jar release/
           cp extension.toml release/
           cp checkstyle.xml release/
+          cp README.md release/
           cd release && zip -r ../java-lint-zed-release.zip .
 
       - name: Upload artifact
