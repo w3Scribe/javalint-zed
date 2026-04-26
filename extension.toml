@@ -4,7 +4,7 @@ version = "0.1.0"
 schema_version = 1
 authors = ["sudhi"]
 description = "Java linting using Checkstyle — highlights style errors and bugs directly in the editor"
-repository = "https://github.com/yourusername/java-lint-zed"
+repository = "https://github.com/w3Scribe/javalint-zed"
 
 [language_servers.java-checkstyle]
 name = "java-checkstyle"
