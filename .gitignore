@@ -1,0 +1,5 @@
+target/
+*.class
+shim/checkstyle.jar
+shim/checkstyle-lsp-shim.jar
+java-lint.log
